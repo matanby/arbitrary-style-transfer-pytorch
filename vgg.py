@@ -1,7 +1,16 @@
-from typing import List
+from dataclasses import dataclass
 
 from torch import nn, Tensor
 from torchvision import models
+
+
+@dataclass
+class Vgg19Features:
+    relu1_1: Tensor
+    relu2_1: Tensor
+    relu3_1: Tensor
+    relu4_1: Tensor
+    relu5_1: Tensor
 
 
 class Vgg19(nn.Module):
@@ -39,12 +48,12 @@ class Vgg19(nn.Module):
 
         self.eval()
 
-    def forward(self, img: Tensor) -> List[Tensor]:
+    def forward(self, img: Tensor) -> Vgg19Features:
         img = (img - self._mean) / self._std
         h_relu1 = self.block1(img)
         h_relu2 = self.block2(h_relu1)
         h_relu3 = self.block3(h_relu2)
         h_relu4 = self.block4(h_relu3)
         h_relu5 = self.block5(h_relu4)
-        out = [h_relu1, h_relu2, h_relu3, h_relu4, h_relu5]
+        out = Vgg19Features(h_relu1, h_relu2, h_relu3, h_relu4, h_relu5)
         return out
